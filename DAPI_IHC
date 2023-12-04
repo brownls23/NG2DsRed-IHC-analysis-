@@ -1,0 +1,51 @@
+//DAPI cell analysis. MACRO generates cell number and DAPI overlay.
+
+waitForUser("DAPI cell analysis beginning")
+waitForUser("Set correct scale")
+
+run("Gaussian Blur...", "sigma=2");
+run("Brightness/Contrast...");
+waitForUser("Click 'auto' on B&C menu")
+run("Duplicate...");
+
+run("Threshold...");
+call("ij.plugin.frame.ThresholdAdjuster.setMode", "Red");
+call("ij.plugin.frame.ThresholdAdjuster.setMode", "B&W");
+setOption("BlackBackground", false);
+waitForUser("Choose correct auto threshold to match signal in original image")
+run("Convert to Mask");
+waitForUser("Check that threshold worked");
+
+run("Watershed");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Remove Outliers...", "radius=5 threshold=50 which=Dark");
+run("Watershed");
+run("Set Measurements...", "area limit display add redirect=None decimal=3");
+run("Analyze Particles...", "size=5-150 display summarize overlay add");
+
+// Results (Count, total area, average size, % area should be provided in a summary results table).
+// Hopefully once this results table has been filled with stats from all images in the folder, I can save the table as an excel file in the output folder that the following output imaged are also sent. 
+// Creates two windows. Window 1 with the binarised coloured image with overlay.  Wondow 2 with binarised image with all signal outside the selected ROIS cleared. Use this to overlay other related images. 
+
+run("Blue");
+roiManager("Show All");
+roiManager("Show All with labels");
+roiManager("Select all");
+roiManager("Combine");
+run("Clear Outside");
+run("Remove Overlay");
+roiManager("Select all")
+roiManager("Delete");
+run("Tiff...");
+waitForUser("Save Summary:Count to excel")
+run("Close All");
+waitForUser("DAPI Analysis complete")
