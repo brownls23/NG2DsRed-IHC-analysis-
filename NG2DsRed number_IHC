@@ -1,0 +1,73 @@
+//NG2-DsRed pericyte analysis. MACRO generates number
+
+
+waitForUser("NG2-DsRed analysis beginning")
+waitForUser("Set correct scale")
+
+//Image thresholding for pericyte number
+
+run("Brightness/Contrast...");
+waitForUser("Click 'auto' on B&C menu")
+run("Duplicate...");
+
+run("Threshold...");
+call("ij.plugin.frame.ThresholdAdjuster.setMode", "Red");
+call("ij.plugin.frame.ThresholdAdjuster.setMode", "B&W");
+setOption("BlackBackground", false);
+waitForUser("Choose correct auto threshold to match signal in original image")
+run("Convert to Mask");
+waitForUser("Check that threshold worked");
+
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Despeckle");
+run("Analyze Particles...", "size=5-300 display overlay add");
+waitForUser("Remove SMC or noise ROIs by double clicking them and pressing delete");
+
+run("Red");
+roiManager("Show All");
+roiManager("Show All with labels");
+roiManager("Select all");
+roiManager("Combine");
+run("Clear Outside");
+run("Remove Overlay");
+roiManager("Select all")
+roiManager("Delete");
+
+setOption("BlackBackground", false);
+run("Convert to Mask");
+run("Analyze Particles...", "size=0-Infinity circularity=0.00-1 display overlay add");
+roiManager("Select all")
+roiManager("Delete");
+run("Convert to Mask");
+waitForUser("Open DAPI threshold image for the same ROI")
+
+run("Convert to Mask");
+waitForUser("Add pericyte number threshold image to 'image1' and DAPI threshold image to 'image2'. Choose 'AND")
+run("Image Calculator...");
+run("Analyze Particles...", "size=5-100 display overlay add");
+waitForUser("Remove incorrect pericyte count ROIs");
+
+run("Red");
+roiManager("Show All");
+roiManager("Show All with labels");
+roiManager("Select all");
+roiManager("Combine");
+run("Clear Outside");
+run("Remove Overlay");
+roiManager("Select all")
+roiManager("Delete");
+run("Tiff...");
+
+setOption("BlackBackground", false);
+run("Convert to Mask");
+run("Analyze Particles...", "size=0-Infinity circularity=0.00-1 display summarize overlay add");
+roiManager("Select all")
+roiManager("Delete");
+run("Convert to Mask");
+waitForUser("Export Summary: count to excel for pericyte number");
+run("Close All");
+
+waitForUser("Pericyte number analysis complete")
